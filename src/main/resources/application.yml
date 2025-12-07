@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: network-file-system
+  # 数据库配置
+  datasource:
+    url: jdbc:postgresql://localhost:5432/netdisk_db
+    username: postgres
+    password: ${POSTGRES_PASSWORD}            # 对应 docker-compose 中的新密码
+    driver-class-name: org.postgresql.Driver
+
+  # Redis 配置
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 30MB  # 单个文件不超过30MB
+      max-request-size: 100MB
+
+server:
+  port: 8090
+  servlet:
+    context-path: /api
+  tomcat:
+    max-swallow-size: 200MB
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: auto
+  configuration:
+    map-underscore-to-camel-case: true
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
+
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.bread.networkfilesystem.controller
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: false
+  setting:
+    language: zh_cn

@@ -1,0 +1,47 @@
+services:
+  # 1. 数据库：PostgreSQL (pgvector image)
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: netdisk-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pg123456
+      POSTGRES_DB: netdisk_db
+    ports:
+      - "5432:5432"
+    networks:
+      - netdisk-net
+
+  # 2. 缓存：Redis (alpine version)
+  redis:
+    image: redis:6.2-alpine
+    container_name: netdisk-redis
+    # 开启AOF持久化，已移除 --requirepass 参数
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    networks:
+      - netdisk-net
+
+  # 3. 消息队列：Apache Pulsar (Standalone mode)
+  pulsar:
+    image: apachepulsar/pulsar:4.0.3
+    container_name: netdisk-pulsar
+    # Standalone模式包含了Zookeeper和Broker
+    command: bin/pulsar standalone
+    volumes:
+      - pulsardata:/pulsar/data
+      - pulsarconf:/pulsar/conf
+    ports:
+      - "6650:6650"  # Pulsar 二进制协议端口 (Java Client连接用)
+      - "8080:8080"  # HTTP 管理端口
+    networks:
+      - netdisk-net
+
+networks:
+  netdisk-net:
+    driver: bridge
+
+volumes:
+  pulsardata:
+  pulsarconf:

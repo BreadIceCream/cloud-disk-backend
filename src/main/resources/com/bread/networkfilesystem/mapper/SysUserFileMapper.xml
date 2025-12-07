@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bread.networkfilesystem.mapper.SysUserFileMapper">
+
+    <select id="selectUserFileList" resultType="com.bread.networkfilesystem.vo.UserFileVO">
+        select uf.id, uf.file_id, uf.file_name, uf.is_folder, uf.role, uf.updated_at, f.file_size, f.file_type
+        from sys_user_file uf
+        left join sys_file f on uf.file_id = f.file_id
+        where uf.user_id = #{userId} and uf.parent_file_id = #{parentFileId}
+    </select>
+
+    <select id="searchByKeyword" resultType="com.bread.networkfilesystem.vo.UserFileVO">
+        SELECT uf.id, uf.file_id, uf.file_name, uf.is_folder, uf.role, uf.updated_at, f.file_size, f.file_type
+        FROM sys_user_file uf
+        LEFT JOIN sys_file f ON uf.file_id = f.file_id
+        WHERE uf.user_id = #{userId} AND uf.file_name LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+</mapper>
